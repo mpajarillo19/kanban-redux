@@ -31,6 +31,7 @@ Environment: this machine's PowerShell blocks `npm.ps1` (execution policy) — c
 - Click-to-edit vs drag on TaskCard: `wasDraggingRef` set via `useEffect` on `isDragging`; a click that follows a drag must not open the modal.
 - Cross-column moves dispatch in `onDragOver` (so the card follows the pointer); `onDragEnd` only reorders within a column or restores the origin if dropped outside.
 - `moveTaskBetweenColumns` defaults `destIndex` to 0 — always pass the real index.
+- **redux-persist storage import**: use `redux-persist/es/storage` (ESM), never the docs-idiomatic `redux-persist/lib/storage` — its CJS default import yields the `{ __esModule, default }` wrapper under Vite 8 (no `__esModule` unwrap applied), causing a white screen with `storage.getItem is not a function` during module eval.
 
 ## Stack (fixed — do not substitute)
 
