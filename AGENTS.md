@@ -2,14 +2,22 @@
 
 ## Status
 
-Greenfield repo: no commits, no `package.json`, no code yet. This file is the agreed spec — follow it instead of inventing architecture.
+Scaffolded Vite + React app; Redux store and `redux-persist` wired. Not yet built: UI components, drag-and-drop, filtering (spec below covers them).
 
-## Bootstrap (first session)
+## Commands
 
-1. Scaffold: `npm create vite@latest . -- --template react`
-2. Install: `npm i @reduxjs/toolkit react-redux redux-persist @dnd-kit/core @dnd-kit/sortable @dnd-kit/utilities tailwindcss lucide-react nanoid`
-3. Configure Tailwind.
-4. Once `package.json` exists, record the real `dev` / `build` / `lint` commands here.
+- `npm run dev` — Vite dev server (port 5173)
+- `npm run build` — production build
+- `npm run lint` — **oxlint** (not ESLint; config: `.oxlintrc.json`)
+- Run `npm run lint` then `npm run build` before committing.
+
+Environment: this machine's PowerShell blocks `npm.ps1` (execution policy) — call `npm.cmd` instead.
+
+## Redux wiring (exists)
+
+- `src/store/kanbanSlice.js` — slice + all reducers + `selectActiveBoardId` fallback selector.
+- `src/store/index.js` — store with `persistReducer` (localStorage, key `kanban`), exports `store` and `persistor`.
+- `src/main.jsx` wraps the app in `<Provider>` + `<PersistGate>`.
 
 ## Stack (fixed — do not substitute)
 
@@ -17,6 +25,7 @@ Greenfield repo: no commits, no `package.json`, no code yet. This file is the ag
 - Redux Toolkit + `redux-persist` (localStorage)
 - **dnd-kit** (`@dnd-kit/core`, `@dnd-kit/sortable`, `@dnd-kit/utilities`) — NOT `react-beautiful-dnd`
 - Tailwind CSS; icons: `lucide-react`; ids: `nanoid`
+- Tailwind **v4** via `@tailwindcss/vite` — CSS is only `@import 'tailwindcss'`; do not add v3 directives (`@tailwind base`…) or `tailwind.config.js`.
 
 ## Redux: normalized state is mandatory
 
@@ -53,6 +62,7 @@ Do not nest tasks in columns or columns in boards. Use exactly this shape:
 - `<DndContext>` wraps `Board` only; `onDragEnd` / `onDragOver` handlers live there.
 - Each `Column` renders `<SortableContext>` with its own `taskIds`; `TaskCard` uses `useSortable`.
 - Dispatch `moveTaskWithinColumn` vs `moveTaskBetweenColumns` based on the drag event.
+- Reducer payloads: `moveTaskWithinColumn` = `{ columnId, fromIndex, toIndex }`; `moveTaskBetweenColumns` = `{ taskId, sourceColumnId, destColumnId, destIndex }` (index optional, defaults to 0).
 
 ## Behavior requirements
 
