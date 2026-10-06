@@ -2,7 +2,7 @@
 
 ## Status
 
-Scaffolded Vite + React app; Redux store and `redux-persist` wired. Not yet built: UI components, drag-and-drop, filtering (spec below covers them).
+Full app implemented: components, drag-and-drop, modals, filtering. Optional column reordering not built. No test suite exists yet.
 
 ## Commands
 
@@ -13,11 +13,24 @@ Scaffolded Vite + React app; Redux store and `redux-persist` wired. Not yet buil
 
 Environment: this machine's PowerShell blocks `npm.ps1` (execution policy) — call `npm.cmd` instead.
 
-## Redux wiring (exists)
+## Redux wiring
 
-- `src/store/kanbanSlice.js` — slice + all reducers + `selectActiveBoardId` fallback selector.
+- `src/store/kanbanSlice.js` — slice + all reducers + `selectActiveBoardId` fallback selector (falls back to first board if active was deleted).
 - `src/store/index.js` — store with `persistReducer` (localStorage, key `kanban`), exports `store` and `persistor`.
+- `src/store/selectors.js` — all derived selectors. Filtering happens **only** in `selectFilteredTaskIdsByColumn` (never mutates stored `taskIds`); re-export of `selectActiveBoardId` lives here too — import selectors from this file, not the slice.
 - `src/main.jsx` wraps the app in `<Provider>` + `<PersistGate>`.
+
+## Code layout
+
+- `src/components/` — `Sidebar` (board CRUD), `TopBar` (filters), `Board` (DndContext + handlers), `Column`, `TaskCard`, `Modal`/`TaskModal`/`ColumnModal`.
+- `src/utils/dnd.js` — drag helpers (`findColumnOfTask`, `taskIndexInColumn`, `columnOfDroppable`). Board reads live state via `useStore().getState()` inside handlers, not selector snapshots.
+
+## Gotchas
+
+- **oxlint enforces the React Compiler refs rule**: never write `ref.current` during render — wrap in `useEffect` (this bit TaskCard once).
+- Click-to-edit vs drag on TaskCard: `wasDraggingRef` set via `useEffect` on `isDragging`; a click that follows a drag must not open the modal.
+- Cross-column moves dispatch in `onDragOver` (so the card follows the pointer); `onDragEnd` only reorders within a column or restores the origin if dropped outside.
+- `moveTaskBetweenColumns` defaults `destIndex` to 0 — always pass the real index.
 
 ## Stack (fixed — do not substitute)
 
@@ -51,17 +64,11 @@ Do not nest tasks in columns or columns in boards. Use exactly this shape:
 
 - Slice: `kanbanSlice.js` with reducers — `addBoard`, `editBoard`, `deleteBoard`, `setActiveBoard`, `addColumn`, `editColumn`, `deleteColumn`, `addTask`, `editTask`, `deleteTask`, `moveTaskWithinColumn` (mutates one column's `taskIds`), `moveTaskBetweenColumns` (removes from source, adds to destination), `setFilters`.
 - Reducers may write mutatively; RTK enables Immer.
-- Wrap the app in `<Provider>` and `redux-persist`'s `<PersistGate>`.
-
-## Components
-
-`App` (layout) → `Sidebar` (board list + add), `TopBar` (active board title, filter dropdowns), `Board` (dnd context area), `Column` (droppable), `TaskCard` (draggable), reusable `Modals` (add/edit tasks and columns).
 
 ## Drag-and-drop wiring
 
 - `<DndContext>` wraps `Board` only; `onDragEnd` / `onDragOver` handlers live there.
 - Each `Column` renders `<SortableContext>` with its own `taskIds`; `TaskCard` uses `useSortable`.
-- Dispatch `moveTaskWithinColumn` vs `moveTaskBetweenColumns` based on the drag event.
 - Reducer payloads: `moveTaskWithinColumn` = `{ columnId, fromIndex, toIndex }`; `moveTaskBetweenColumns` = `{ taskId, sourceColumnId, destColumnId, destIndex }` (index optional, defaults to 0).
 
 ## Behavior requirements
