@@ -1,5 +1,6 @@
+import { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { X } from 'lucide-react'
+import { Moon, Sun, X } from 'lucide-react'
 import { setFilters } from '../store/kanbanSlice'
 import {
   selectActiveBoard,
@@ -9,8 +10,10 @@ import {
   selectLabelOptions,
 } from '../store/selectors'
 
-const selectClass =
-  'rounded-md border border-slate-300 bg-white px-2 py-1 text-sm text-slate-700 focus:border-blue-500 focus:outline-none'
+const selectClass = (active) =>
+  `rounded-md border bg-surface px-2.5 py-1.5 text-sm transition hover:border-border-strong ${
+    active ? 'border-accent/60 font-medium text-primary' : 'border-border text-secondary'
+  }`
 
 export default function TopBar() {
   const dispatch = useDispatch()
@@ -19,17 +22,26 @@ export default function TopBar() {
   const filtersActive = useSelector(selectFiltersActive)
   const labelOptions = useSelector(selectLabelOptions)
   const assigneeOptions = useSelector(selectAssigneeOptions)
+  const [dark, setDark] = useState(() => document.documentElement.classList.contains('dark'))
+
+  const handleToggleTheme = () => {
+    const next = !dark
+    setDark(next)
+    document.documentElement.classList.toggle('dark', next)
+    localStorage.setItem('theme', next ? 'dark' : 'light')
+  }
 
   return (
-    <header className="flex items-center justify-between border-b border-slate-200 bg-white px-6 py-3">
-      <h2 className="text-lg font-semibold text-slate-800">
+    <header className="flex items-center justify-between gap-4 border-b border-border bg-surface px-6 py-3">
+      <h2 className="min-w-0 truncate text-[15px] font-semibold tracking-tight text-primary">
         {board ? board.title : 'Kanban'}
       </h2>
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-1.5">
         <select
           value={filters.label ?? ''}
           onChange={(event) => dispatch(setFilters({ label: event.target.value || null }))}
-          className={selectClass}
+          className={selectClass(Boolean(filters.label))}
+          aria-label="Filter by label"
         >
           <option value="">All labels</option>
           {labelOptions.map((label) => (
@@ -41,7 +53,8 @@ export default function TopBar() {
         <select
           value={filters.assignee ?? ''}
           onChange={(event) => dispatch(setFilters({ assignee: event.target.value || null }))}
-          className={selectClass}
+          className={selectClass(Boolean(filters.assignee))}
+          aria-label="Filter by assignee"
         >
           <option value="">All assignees</option>
           {assigneeOptions.map((assignee) => (
@@ -54,11 +67,20 @@ export default function TopBar() {
           <button
             type="button"
             onClick={() => dispatch(setFilters({ label: null, assignee: null }))}
-            className="flex items-center gap-1 rounded-md px-2 py-1 text-sm text-slate-500 transition hover:bg-slate-100 hover:text-slate-700"
+            className="flex items-center gap-1 rounded-md px-2 py-1.5 text-sm text-muted transition hover:bg-hover hover:text-primary"
           >
             <X size={14} /> Clear
           </button>
         )}
+        <button
+          type="button"
+          onClick={handleToggleTheme}
+          className="ml-1 rounded-md p-2 text-muted transition hover:bg-hover hover:text-primary"
+          aria-label={dark ? 'Switch to light theme' : 'Switch to dark theme'}
+          title={dark ? 'Switch to light theme' : 'Switch to dark theme'}
+        >
+          {dark ? <Sun size={16} /> : <Moon size={16} />}
+        </button>
       </div>
     </header>
   )

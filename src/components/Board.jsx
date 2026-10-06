@@ -7,11 +7,12 @@ import {
   useSensor,
   useSensors,
 } from '@dnd-kit/core'
-import { Plus } from 'lucide-react'
+import { Plus, LayoutGrid } from 'lucide-react'
 import { moveTaskBetweenColumns, moveTaskWithinColumn } from '../store/kanbanSlice'
 import {
   selectActiveBoard,
   selectActiveBoardColumns,
+  selectBoardList,
   selectFilteredTaskIdsByColumn,
 } from '../store/selectors'
 import { columnOfDroppable, findColumnOfTask, taskIndexInColumn } from '../utils/dnd'
@@ -23,6 +24,7 @@ export default function Board() {
   const store = useStore()
   const board = useSelector(selectActiveBoard)
   const columns = useSelector(selectActiveBoardColumns)
+  const boards = useSelector(selectBoardList)
   const filteredTaskIds = useSelector(selectFilteredTaskIdsByColumn)
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
@@ -96,9 +98,31 @@ export default function Board() {
   }
 
   if (!board) {
+    const hasBoards = boards.length > 0
     return (
-      <div className="flex flex-1 items-center justify-center text-sm text-slate-400">
-        No board selected. Create one from the sidebar.
+      <div className="flex flex-1 flex-col items-center justify-center gap-4 px-6 text-center">
+        <span className="grid size-12 place-items-center rounded-xl bg-accent-subtle text-accent-text">
+          <LayoutGrid size={22} />
+        </span>
+        <div>
+          <p className="text-sm font-medium text-primary">
+            {hasBoards ? 'No board selected' : 'Welcome to Kanban'}
+          </p>
+          <p className="mt-1 text-[13px] text-muted">
+            {hasBoards
+              ? 'Select a board from the sidebar to get started.'
+              : 'Create your first board to start organizing tasks.'}
+          </p>
+        </div>
+        {!hasBoards && (
+          <button
+            type="button"
+            onClick={() => document.getElementById('new-board-input')?.focus()}
+            className="rounded-md bg-accent px-3.5 py-2 text-sm font-medium text-accent-contrast transition hover:bg-accent-hover"
+          >
+            Create board
+          </button>
+        )}
       </div>
     )
   }
@@ -133,7 +157,7 @@ function AddColumnSlot({ boardId }) {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="flex w-full items-center gap-1 rounded-xl bg-slate-200/50 px-3 py-2 text-sm text-slate-500 transition hover:bg-slate-200 hover:text-slate-700"
+        className="flex w-full items-center gap-1.5 rounded-xl border border-dashed border-border-strong px-3 py-2.5 text-sm text-muted transition hover:border-accent/60 hover:bg-accent-subtle/50 hover:text-accent-text"
       >
         <Plus size={16} /> Add column
       </button>

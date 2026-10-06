@@ -45,7 +45,7 @@ export default function TaskModal({ task, columnId, onClose }) {
                 dispatch(deleteTask(task.id))
                 onClose()
               }}
-              className="flex items-center gap-1 rounded-md px-2 py-1.5 text-sm text-red-600 transition hover:bg-red-50"
+              className="flex items-center gap-1.5 rounded-md px-2 py-1.5 text-sm text-danger transition hover:bg-danger/10"
             >
               <Trash2 size={15} /> Delete
             </button>
@@ -56,14 +56,14 @@ export default function TaskModal({ task, columnId, onClose }) {
             <button
               type="button"
               onClick={onClose}
-              className="rounded-md px-3 py-1.5 text-sm text-slate-600 transition hover:bg-slate-100"
+              className="rounded-md px-3 py-1.5 text-sm text-secondary transition hover:bg-hover hover:text-primary"
             >
               Cancel
             </button>
             <button
               type="submit"
               form="task-form"
-              className="rounded-md bg-blue-600 px-3 py-1.5 text-sm font-medium text-white transition hover:bg-blue-700"
+              className="rounded-md bg-accent px-3.5 py-1.5 text-sm font-medium text-accent-contrast transition hover:bg-accent-hover"
             >
               Save
             </button>
@@ -71,45 +71,45 @@ export default function TaskModal({ task, columnId, onClose }) {
         </div>
       }
     >
-      <form id="task-form" onSubmit={handleSubmit} className="space-y-3">
+      <form id="task-form" onSubmit={handleSubmit} className="space-y-3.5">
         <label className="block">
-          <span className="mb-1 block text-sm font-medium text-slate-700">Title</span>
+          <span className="mb-1.5 block text-[13px] font-medium text-secondary">Title</span>
           <input
             type="text"
             value={title}
             onChange={(event) => setTitle(event.target.value)}
-            className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+            className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-primary transition hover:border-border-strong placeholder:text-muted focus:border-accent/60 focus:outline-none"
             placeholder="Task title"
             autoFocus
           />
         </label>
         <label className="block">
-          <span className="mb-1 block text-sm font-medium text-slate-700">Description</span>
+          <span className="mb-1.5 block text-[13px] font-medium text-secondary">Description</span>
           <textarea
             value={description}
             onChange={(event) => setDescription(event.target.value)}
             rows={3}
-            className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+            className="w-full resize-y rounded-md border border-border bg-background px-3 py-2 text-sm text-primary transition hover:border-border-strong placeholder:text-muted focus:border-accent/60 focus:outline-none"
             placeholder="Details, steps, links…"
           />
         </label>
         <label className="block">
-          <span className="mb-1 block text-sm font-medium text-slate-700">Labels (comma-separated)</span>
+          <span className="mb-1.5 block text-[13px] font-medium text-secondary">Labels (comma-separated)</span>
           <input
             type="text"
             value={labels}
             onChange={(event) => setLabels(event.target.value)}
-            className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+            className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-primary transition hover:border-border-strong placeholder:text-muted focus:border-accent/60 focus:outline-none"
             placeholder="frontend, urgent"
           />
         </label>
         <label className="block">
-          <span className="mb-1 block text-sm font-medium text-slate-700">Assignee</span>
+          <span className="mb-1.5 block text-[13px] font-medium text-secondary">Assignee</span>
           <input
             type="text"
             value={assignee}
             onChange={(event) => setAssignee(event.target.value)}
-            className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+            className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-primary transition hover:border-border-strong placeholder:text-muted focus:border-accent/60 focus:outline-none"
             placeholder="Alice"
           />
         </label>

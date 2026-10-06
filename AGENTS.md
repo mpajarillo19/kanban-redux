@@ -2,7 +2,7 @@
 
 ## Status
 
-Full app implemented: components, drag-and-drop, modals, filtering. Optional column reordering not built. No test suite exists yet.
+Full app implemented: components, drag-and-drop, modals, filtering. UI redesigned on the token-based design system (`src/index.css`) with class-based dark mode. Optional column reordering not built. No test suite exists yet.
 
 ## Commands
 
@@ -39,7 +39,13 @@ Environment: this machine's PowerShell blocks `npm.ps1` (execution policy) — c
 - Redux Toolkit + `redux-persist` (localStorage)
 - **dnd-kit** (`@dnd-kit/core`, `@dnd-kit/sortable`, `@dnd-kit/utilities`) — NOT `react-beautiful-dnd`
 - Tailwind CSS; icons: `lucide-react`; ids: `nanoid`
-- Tailwind **v4** via `@tailwindcss/vite` — CSS is only `@import 'tailwindcss'`; do not add v3 directives (`@tailwind base`…) or `tailwind.config.js`.
+- Tailwind **v4** via `@tailwindcss/vite` — no v3 directives (`@tailwind base`…) and no `tailwind.config.js`. All styling lives in `src/index.css`: `@import 'tailwindcss'` + design tokens (`:root`/`.dark` CSS variables, `@theme inline` mapping, `@custom-variant dark`).
+
+## Theming & design tokens
+
+- **Semantic tokens only** — use `bg-background`, `bg-surface`, `bg-surface-raised`, `bg-surface-muted`, `border-border`, `border-border-strong`, `text-primary`/`text-secondary`/`text-muted`, `hover:bg-hover`, `bg-accent`/`bg-accent-subtle`/`text-accent-text`, `text-danger`, `text-label-*`. Never raw palette classes (`slate-300`, `blue-500`, `bg-white`…) — they don't adapt to dark mode.
+- Dark mode is **class-based**: `.dark` on `<html>`. `TopBar` toggles it and persists `localStorage.theme`; a pre-paint inline script in `index.html` applies the theme before React loads (no flash), falling back to `prefers-color-scheme`.
+- To add a color: define the CSS variable in **both** `:root` and `.dark` in `src/index.css`, expose it in the `@theme inline` block, then use the `<name>` utilities.
 
 ## Redux: normalized state is mandatory
 
